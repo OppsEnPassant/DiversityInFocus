@@ -1,0 +1,169 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <set>
+#include <limits>
+using namespace std;
+
+// Student class
+class Student {
+private:
+    string studentName;
+    int studentNumber;
+    long regYear;
+    string faculty;
+    string departm;
+    string gender;
+    string race;
+
+public:
+    // Constructor
+    Student(string name, int number, long year, string fac, string dept, string gen, string r) 
+        : studentName(name), studentNumber(number), regYear(year), faculty(fac), departm(dept), gender(gen), race(r) {}
+
+    // Accessors (Getters)
+    string getStudentName() const { return studentName; }
+    int getStudentNumber() const { return studentNumber; }
+    long getRegYear() const { return regYear; }
+    string getFaculty() const { return faculty; }
+    string getDepartm() const { return departm; }
+    string getGender() const { return gender; }
+    string getRace() const { return race; }
+
+    // Mutators (Setters)
+    void setStudentName(const string& name) { studentName = name; }
+    void setStudentNumber(int number) { studentNumber = number; }
+    void setRegYear(long year) { regYear = year; }
+    void setFaculty(const string& fac) { faculty = fac; }
+    void setDepartm(const string& dept) { departm = dept; }
+    void setGender(const string& gen) { gender = gen; }
+    void setRace(const string& r) { race = r; }
+
+    // toString method
+    void display() const {
+        cout << "Name: " << studentName << ", Number: " << studentNumber << ", Department: " << departm << endl;
+    }
+};
+
+// MeetUp class
+class MeetUp {
+private:
+    vector<Student> studentArray;
+
+    // Helper function to get valid integer input
+    int getValidInt(const string& prompt) {
+        int value;
+        while (true) {
+            cout << prompt;
+            cin >> value;
+            if (cin.fail()) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Invalid input. Please enter a valid number." << endl;
+            } else {
+                cin.ignore();
+                return value;
+            }
+        }
+    }
+
+    // Helper function to get valid long input
+    long getValidLong(const string& prompt) {
+        long value;
+        while (true) {
+            cout << prompt;
+            cin >> value;
+            if (cin.fail()) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Invalid input. Please enter a valid number." << endl;
+            } else {
+                cin.ignore();
+                return value;
+            }
+        }
+    }
+
+public:
+    // Method to fill the student array
+    void fillArray() {
+        int numStudents = getValidInt("How many students do you want to input? ");
+
+        if (numStudents <= 0) {
+            cout << "Invalid number of students. Exiting." << endl;
+            return;
+        }
+
+        for (int i = 0; i < numStudents; i++) {
+            cout << "Enter details for student " << (i + 1) << ":" << endl;
+
+            string name, faculty, department, gender, race;
+            int number = getValidInt("Number: ");
+            long regYear = getValidLong("Registration Year: ");
+
+            cout << "Name: ";
+            getline(cin, name);
+
+            cout << "Faculty: ";
+            getline(cin, faculty);
+
+            cout << "Department: ";
+            getline(cin, department);
+
+            cout << "Gender (Male/Female): ";
+            getline(cin, gender);
+
+            cout << "Race (Black/White/Coloured/Indian/Other): ";
+            getline(cin, race);
+
+            studentArray.emplace_back(name, number, regYear, faculty, department, gender, race);
+        }
+    }
+
+    // Main method
+    void analyzeDiversity() {
+        if (studentArray.empty()) {
+            cout << "No student data to analyze." << endl;
+            return;
+        }
+
+        int femaleCount = 0;
+        set<string> uniqueRaces;
+
+        // Process the student data
+        for (const auto& student : studentArray) {
+            string gender = student.getGender();
+            for (char& c : gender) c = tolower(c);
+            if (gender == "female") {
+                femaleCount++;
+            }
+
+            uniqueRaces.insert(student.getRace());
+        }
+
+        // Display the results
+        if (femaleCount >= static_cast<int>(studentArray.size()) / 2 && uniqueRaces.size() >= 3) {
+            cout << "Great! We are making progress! Let's keep it up." << endl;
+        } else {
+            cout << "We need to work on diversifying more." << endl;
+        }
+
+        // Display all students
+        cout << "\nStudent Details:" << endl;
+        for (const auto& student : studentArray) {
+            student.display();
+        }
+    }
+};
+
+int main() {
+    MeetUp meetUp;
+
+    // Populate student data
+    meetUp.fillArray();
+
+    // Analyze diversity
+    meetUp.analyzeDiversity();
+
+    return 0;
+}
